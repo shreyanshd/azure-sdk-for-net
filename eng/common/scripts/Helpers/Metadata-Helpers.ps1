@@ -93,9 +93,11 @@ function GetDocsMsService($packageInfo, $serviceName)
   return $service
 }
 
-function GenerateDocsMsMetadata($language, $serviceName, $tenantId, $clientId, $clientSecret, $msService) 
+function GenerateDocsMsMetadata($language, $langTitle, $serviceName, $tenantId, $clientId, $clientSecret, $msService) 
 {
-  $langTitle = "Azure $serviceName SDK for $language"
+  if (!$langTitle) {
+    $langTitle = "Azure $serviceName SDK for $language"
+  }
   $langDescription = "Reference for Azure $serviceName SDK for $language"
   # Github url for source code: e.g. https://github.com/Azure/azure-sdk-for-js
   $serviceBaseName = $serviceName.ToLower().Replace(' ', '').Replace('/', '-')
