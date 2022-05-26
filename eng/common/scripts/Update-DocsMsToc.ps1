@@ -121,7 +121,7 @@ function create-metadata-table($absolutePath, $readmeName, $moniker, $msService,
   New-Item -Path $readmePath -Force
   $lang = $LanguageDisplayName
   $langTitle = "Azure $serviceName SDK for $lang"
-  $header = GenerateDocsMsMetadata -lang $lang -langTitle $langTitle -serviceName $serviceName `
+  $header = GenerateDocsMsMetadata -language $lang -langTitle $langTitle -serviceName $serviceName `
     -tenantId $TenantId -clientId $ClientId -clientSecret $ClientSecret `
     -msService $msService
   Add-Content -Path $readmePath -Value $header
@@ -142,17 +142,18 @@ function create-metadata-table($absolutePath, $readmeName, $moniker, $msService,
 }
 
 # Update the metadata table on attributes: author, ms.author, ms.service
-function update-metadata-table($absolutePath, $readmePath, $serviceName, $msService)
+function update-metadata-table($absolutePath, $readmeName, $serviceName, $msService)
 {
-  $readmeContent = Get-Content -Path (Join-Path $absolutePath -ChildPath $readmeName) -Raw
+  $readmePath = Join-Path $absolutePath -ChildPath $readmeName
+  $readmeContent = Get-Content -Path $readmePath -Raw
   $null = $readmeContent -match "---`n*(?<metadata>(.*`n)*)---`n*(?<content>(.*`n)*)"
   $restContent = $Matches["content"]
 
   $lang = $LanguageDisplayName
-  $metadataString = GenerateDocsMsMetadata -lang $lang -serviceName $serviceName `
+  $metadataString = GenerateDocsMsMetadata -language $lang -serviceName $serviceName `
     -tenantId $TenantId -clientId $ClientId -clientSecret $ClientSecret `
     -msService $msService
-  Set-Content -Path $readmePath -Value "---`n$metadataString---`n$restContent" -NoNewline
+  Set-Content -Path $readmePath -Value "$metadataString`n$restContent" -NoNewline
 }
 
 function generate-markdown-table($absolutePath, $readmeName, $packageInfo, $moniker) {
@@ -167,7 +168,7 @@ function generate-markdown-table($absolutePath, $readmeName, $packageInfo, $moni
     }
     $repositoryLink = $RepositoryUri
     $packageLevelReame = &$GetPackageLevelReadmeFn -packageMetadata $pkg
-    $referenceLink = "$packageLevelReame-readme"
+    $referenceLink = "($packageLevelReame-readme)"
     if (!(Test-Path (Join-Path $absolutePath -ChildPath "$referenceLink.md"))) {
       $referenceLink = ""
     }
@@ -175,7 +176,7 @@ function generate-markdown-table($absolutePath, $readmeName, $packageInfo, $moni
     if ($pkg.PSObject.Members.Name -contains "FileMetadata") {
       $githubLink = "$GithubUri/blob/main/$($pkg.FileMetadata.DirectoryPath)"
     }
-    $line = "|[$($pkg.DisplayName)]($referenceLink)|[$($pkg.Package)]($repositoryLink/$($pkg.Package))|[Github]($githubLink)|`r`n"
+    $line = "|[$($pkg.DisplayName)]$referenceLink|[$($pkg.Package)]($repositoryLink/$($pkg.Package))|[Github]($githubLink)|`r`n"
     $content += $line
   }
   Set-Content -Path (Join-Path $absolutePath -ChildPath $readmeName) -Value $content -NoNewline
@@ -191,11 +192,11 @@ function generate-service-level-readme($readmeBaseName, $pathPrefix, $packageInf
     $serviceReadme = "$readmeBaseName.md"
     $clientIndexReadme  = "$readmeBaseName-client-index.md"
     $mgmtIndexReadme  = "$readmeBaseName-mgmt-index.md"
-    $clientPackageInfo = $servicePackages.Where({ 'client' -eq $_.Type }) | Sort-Object -Property Package
+    $clientPackageInfo = $servicePackages.Where({ 'client' -eq $_.Type -and 'true' -eq $_.New}) | Sort-Object -Property Package
     if ($clientPackageInfo) {
       generate-markdown-table -absolutePath "$absolutePath" -readmeName "$clientIndexReadme" -packageInfo $clientPackageInfo -moniker $moniker
     }
-    $mgmtPackageInfo = $servicePackages.Where({ 'mgmt' -eq $_.Type }) | Sort-Object -Property Package
+    $mgmtPackageInfo = $servicePackages.Where({ 'mgmt' -eq $_.Type -and 'true' -eq $_.New }) | Sort-Object -Property Package
     if ($mgmtPackageInfo) {
       generate-markdown-table -absolutePath $absolutePath -readmeName "$mgmtIndexReadme" -packageInfo $mgmtPackageInfo -moniker $moniker
     }
@@ -326,7 +327,6 @@ foreach ($service in $serviceNameList) {
   $hrefPrefix = "docs-ref-services"
 
   if($EnableServiceReadmeGen) {
-    $servicePackages = $servicePackages.Where({ 'true' -eq $_.New})
     generate-service-level-readme -readmeBaseName $serviceReadmeBaseName -pathPrefix $hrefPrefix `
       -packageInfos $servicePackages -serviceName $service
   }
