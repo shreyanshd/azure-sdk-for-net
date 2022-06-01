@@ -34,8 +34,8 @@ namespace Azure.ResourceManager.EdgeOrder
             return new ResourceIdentifier(resourceId);
         }
 
-        private readonly ClientDiagnostics _orderItemResourceClientDiagnostics;
-        private readonly EdgeOrderManagementRestOperations _orderItemResourceRestClient;
+        private readonly ClientDiagnostics _orderItemResourceOrderItemsClientDiagnostics;
+        private readonly OrderItemsRestOperations _orderItemResourceOrderItemsRestClient;
         private readonly OrderItemResourceData _data;
 
         /// <summary> Initializes a new instance of the <see cref="OrderItemResource"/> class for mocking. </summary>
@@ -57,9 +57,9 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal OrderItemResource(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _orderItemResourceClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.EdgeOrder", ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(ResourceType, out string orderItemResourceApiVersion);
-            _orderItemResourceRestClient = new EdgeOrderManagementRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, orderItemResourceApiVersion);
+            _orderItemResourceOrderItemsClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.EdgeOrder", ResourceType.Namespace, Diagnostics);
+            TryGetApiVersion(ResourceType, out string orderItemResourceOrderItemsApiVersion);
+            _orderItemResourceOrderItemsRestClient = new OrderItemsRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, orderItemResourceOrderItemsApiVersion);
 #if DEBUG
 			ValidateResourceId(Id);
 #endif
@@ -90,19 +90,19 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Gets an order item.
+        /// Get an order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
-        /// <param name="expand"> $expand is supported on device details, forward shipping details and reverse shipping details parameters. Each of these can be provided as a comma separated list. Device Details for order item provides details on the devices of the product, Forward and Reverse Shipping details provide forward and reverse shipping details respectively. </param>
+        /// <param name="expand"> $expand is supported on parent device details, device details, forward shipping details and reverse shipping details parameters. Each of these can be provided as a comma separated list. Parent Device Details for order item provides details on the devices of the product, Device Details for order item provides details on the devices of the child configurations of the product, Forward and Reverse Shipping details provide forward and reverse shipping details respectively. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<OrderItemResource>> GetAsync(string expand = null, CancellationToken cancellationToken = default)
         {
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.Get");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Get");
             scope.Start();
             try
             {
-                var response = await _orderItemResourceRestClient.GetOrderItemByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, expand, cancellationToken).ConfigureAwait(false);
+                var response = await _orderItemResourceOrderItemsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, expand, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new OrderItemResource(Client, response.Value), response.GetRawResponse());
@@ -115,19 +115,19 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Gets an order item.
+        /// Get an order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
-        /// <param name="expand"> $expand is supported on device details, forward shipping details and reverse shipping details parameters. Each of these can be provided as a comma separated list. Device Details for order item provides details on the devices of the product, Forward and Reverse Shipping details provide forward and reverse shipping details respectively. </param>
+        /// <param name="expand"> $expand is supported on parent device details, device details, forward shipping details and reverse shipping details parameters. Each of these can be provided as a comma separated list. Parent Device Details for order item provides details on the devices of the product, Device Details for order item provides details on the devices of the child configurations of the product, Forward and Reverse Shipping details provide forward and reverse shipping details respectively. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<OrderItemResource> Get(string expand = null, CancellationToken cancellationToken = default)
         {
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.Get");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Get");
             scope.Start();
             try
             {
-                var response = _orderItemResourceRestClient.GetOrderItemByName(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, expand, cancellationToken);
+                var response = _orderItemResourceOrderItemsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, expand, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new OrderItemResource(Client, response.Value), response.GetRawResponse());
@@ -140,20 +140,20 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Deletes an order item.
+        /// Delete an order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: DeleteOrderItemByName
+        /// Operation Id: OrderItems_Delete
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<ArmOperation> DeleteAsync(WaitUntil waitUntil, CancellationToken cancellationToken = default)
         {
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.Delete");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Delete");
             scope.Start();
             try
             {
-                var response = await _orderItemResourceRestClient.DeleteOrderItemByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
-                var operation = new EdgeOrderArmOperation(_orderItemResourceClientDiagnostics, Pipeline, _orderItemResourceRestClient.CreateDeleteOrderItemByNameRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name).Request, response, OperationFinalStateVia.Location);
+                var response = await _orderItemResourceOrderItemsRestClient.DeleteAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
+                var operation = new EdgeOrderArmOperation(_orderItemResourceOrderItemsClientDiagnostics, Pipeline, _orderItemResourceOrderItemsRestClient.CreateDeleteRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionResponseAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -166,20 +166,20 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Deletes an order item.
+        /// Delete an order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: DeleteOrderItemByName
+        /// Operation Id: OrderItems_Delete
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual ArmOperation Delete(WaitUntil waitUntil, CancellationToken cancellationToken = default)
         {
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.Delete");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Delete");
             scope.Start();
             try
             {
-                var response = _orderItemResourceRestClient.DeleteOrderItemByName(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
-                var operation = new EdgeOrderArmOperation(_orderItemResourceClientDiagnostics, Pipeline, _orderItemResourceRestClient.CreateDeleteOrderItemByNameRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name).Request, response, OperationFinalStateVia.Location);
+                var response = _orderItemResourceOrderItemsRestClient.Delete(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
+                var operation = new EdgeOrderArmOperation(_orderItemResourceOrderItemsClientDiagnostics, Pipeline, _orderItemResourceOrderItemsRestClient.CreateDeleteRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletionResponse(cancellationToken);
                 return operation;
@@ -192,12 +192,12 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Updates the properties of an existing order item.
+        /// Update the properties of an existing order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: UpdateOrderItem
+        /// Operation Id: OrderItems_Update
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="patch"> order item update parameters from request body. </param>
+        /// <param name="patch"> Order item update parameters from request body. </param>
         /// <param name="ifMatch"> Defines the If-Match condition. The patch will be performed only if the ETag of the order on the server matches this value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="patch"/> is null. </exception>
@@ -205,12 +205,12 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNull(patch, nameof(patch));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.Update");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Update");
             scope.Start();
             try
             {
-                var response = await _orderItemResourceRestClient.UpdateOrderItemAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch, cancellationToken).ConfigureAwait(false);
-                var operation = new EdgeOrderArmOperation<OrderItemResource>(new OrderItemResourceOperationSource(Client), _orderItemResourceClientDiagnostics, Pipeline, _orderItemResourceRestClient.CreateUpdateOrderItemRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch).Request, response, OperationFinalStateVia.Location);
+                var response = await _orderItemResourceOrderItemsRestClient.UpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch, cancellationToken).ConfigureAwait(false);
+                var operation = new EdgeOrderArmOperation<OrderItemResource>(new OrderItemResourceOperationSource(Client), _orderItemResourceOrderItemsClientDiagnostics, Pipeline, _orderItemResourceOrderItemsRestClient.CreateUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -223,12 +223,12 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Updates the properties of an existing order item.
+        /// Update the properties of an existing order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: UpdateOrderItem
+        /// Operation Id: OrderItems_Update
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="patch"> order item update parameters from request body. </param>
+        /// <param name="patch"> Order item update parameters from request body. </param>
         /// <param name="ifMatch"> Defines the If-Match condition. The patch will be performed only if the ETag of the order on the server matches this value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="patch"/> is null. </exception>
@@ -236,12 +236,12 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNull(patch, nameof(patch));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.Update");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Update");
             scope.Start();
             try
             {
-                var response = _orderItemResourceRestClient.UpdateOrderItem(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch, cancellationToken);
-                var operation = new EdgeOrderArmOperation<OrderItemResource>(new OrderItemResourceOperationSource(Client), _orderItemResourceClientDiagnostics, Pipeline, _orderItemResourceRestClient.CreateUpdateOrderItemRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch).Request, response, OperationFinalStateVia.Location);
+                var response = _orderItemResourceOrderItemsRestClient.Update(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch, cancellationToken);
+                var operation = new EdgeOrderArmOperation<OrderItemResource>(new OrderItemResourceOperationSource(Client), _orderItemResourceOrderItemsClientDiagnostics, Pipeline, _orderItemResourceOrderItemsRestClient.CreateUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, patch, ifMatch).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -256,20 +256,20 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Cancel order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}/cancel
-        /// Operation Id: CancelOrderItem
+        /// Operation Id: OrderItems_Cancel
         /// </summary>
         /// <param name="cancellationReason"> Reason for cancellation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="cancellationReason"/> is null. </exception>
-        public virtual async Task<Response> CancelOrderItemAsync(CancellationReason cancellationReason, CancellationToken cancellationToken = default)
+        public virtual async Task<Response> CancelAsync(CancellationReason cancellationReason, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(cancellationReason, nameof(cancellationReason));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.CancelOrderItem");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Cancel");
             scope.Start();
             try
             {
-                var response = await _orderItemResourceRestClient.CancelOrderItemAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationReason, cancellationToken).ConfigureAwait(false);
+                var response = await _orderItemResourceOrderItemsRestClient.CancelAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationReason, cancellationToken).ConfigureAwait(false);
                 return response;
             }
             catch (Exception e)
@@ -282,20 +282,20 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Cancel order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}/cancel
-        /// Operation Id: CancelOrderItem
+        /// Operation Id: OrderItems_Cancel
         /// </summary>
         /// <param name="cancellationReason"> Reason for cancellation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="cancellationReason"/> is null. </exception>
-        public virtual Response CancelOrderItem(CancellationReason cancellationReason, CancellationToken cancellationToken = default)
+        public virtual Response Cancel(CancellationReason cancellationReason, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(cancellationReason, nameof(cancellationReason));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.CancelOrderItem");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Cancel");
             scope.Start();
             try
             {
-                var response = _orderItemResourceRestClient.CancelOrderItem(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationReason, cancellationToken);
+                var response = _orderItemResourceOrderItemsRestClient.Cancel(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationReason, cancellationToken);
                 return response;
             }
             catch (Exception e)
@@ -308,22 +308,22 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Return order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}/return
-        /// Operation Id: ReturnOrderItem
+        /// Operation Id: OrderItems_Return
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="details"> Return order item CurrentStatus. </param>
+        /// <param name="details"> Return order item details. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="details"/> is null. </exception>
-        public virtual async Task<ArmOperation> ReturnOrderItemAsync(WaitUntil waitUntil, ReturnOrderItemDetails details, CancellationToken cancellationToken = default)
+        public virtual async Task<ArmOperation> ReturnAsync(WaitUntil waitUntil, ReturnOrderItemDetails details, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(details, nameof(details));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.ReturnOrderItem");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Return");
             scope.Start();
             try
             {
-                var response = await _orderItemResourceRestClient.ReturnOrderItemAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details, cancellationToken).ConfigureAwait(false);
-                var operation = new EdgeOrderArmOperation(_orderItemResourceClientDiagnostics, Pipeline, _orderItemResourceRestClient.CreateReturnOrderItemRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details).Request, response, OperationFinalStateVia.Location);
+                var response = await _orderItemResourceOrderItemsRestClient.ReturnAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details, cancellationToken).ConfigureAwait(false);
+                var operation = new EdgeOrderArmOperation(_orderItemResourceOrderItemsClientDiagnostics, Pipeline, _orderItemResourceOrderItemsRestClient.CreateReturnRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionResponseAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -338,22 +338,22 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Return order item.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}/return
-        /// Operation Id: ReturnOrderItem
+        /// Operation Id: OrderItems_Return
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="details"> Return order item CurrentStatus. </param>
+        /// <param name="details"> Return order item details. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="details"/> is null. </exception>
-        public virtual ArmOperation ReturnOrderItem(WaitUntil waitUntil, ReturnOrderItemDetails details, CancellationToken cancellationToken = default)
+        public virtual ArmOperation Return(WaitUntil waitUntil, ReturnOrderItemDetails details, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(details, nameof(details));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.ReturnOrderItem");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.Return");
             scope.Start();
             try
             {
-                var response = _orderItemResourceRestClient.ReturnOrderItem(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details, cancellationToken);
-                var operation = new EdgeOrderArmOperation(_orderItemResourceClientDiagnostics, Pipeline, _orderItemResourceRestClient.CreateReturnOrderItemRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details).Request, response, OperationFinalStateVia.Location);
+                var response = _orderItemResourceOrderItemsRestClient.Return(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details, cancellationToken);
+                var operation = new EdgeOrderArmOperation(_orderItemResourceOrderItemsClientDiagnostics, Pipeline, _orderItemResourceOrderItemsRestClient.CreateReturnRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, details).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletionResponse(cancellationToken);
                 return operation;
@@ -368,7 +368,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Add a tag to the current resource.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="value"> The value for the tag. </param>
@@ -379,14 +379,14 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNull(key, nameof(key));
             Argument.AssertNotNull(value, nameof(value));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.AddTag");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.AddTag");
             scope.Start();
             try
             {
                 var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
                 originalTags.Value.Data.TagValues[key] = value;
                 await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalResponse = await _orderItemResourceRestClient.GetOrderItemByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken).ConfigureAwait(false);
+                var originalResponse = await _orderItemResourceOrderItemsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(new OrderItemResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
             }
             catch (Exception e)
@@ -399,7 +399,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Add a tag to the current resource.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="value"> The value for the tag. </param>
@@ -410,14 +410,14 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNull(key, nameof(key));
             Argument.AssertNotNull(value, nameof(value));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.AddTag");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.AddTag");
             scope.Start();
             try
             {
                 var originalTags = GetTagResource().Get(cancellationToken);
                 originalTags.Value.Data.TagValues[key] = value;
                 GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
-                var originalResponse = _orderItemResourceRestClient.GetOrderItemByName(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken);
+                var originalResponse = _orderItemResourceOrderItemsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken);
                 return Response.FromValue(new OrderItemResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
             }
             catch (Exception e)
@@ -430,7 +430,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Replace the tags on the resource with the given set.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -439,7 +439,7 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNull(tags, nameof(tags));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.SetTags");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.SetTags");
             scope.Start();
             try
             {
@@ -447,7 +447,7 @@ namespace Azure.ResourceManager.EdgeOrder
                 var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
                 originalTags.Value.Data.TagValues.ReplaceWith(tags);
                 await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalResponse = await _orderItemResourceRestClient.GetOrderItemByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken).ConfigureAwait(false);
+                var originalResponse = await _orderItemResourceOrderItemsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(new OrderItemResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
             }
             catch (Exception e)
@@ -460,7 +460,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Replace the tags on the resource with the given set.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -469,7 +469,7 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNull(tags, nameof(tags));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.SetTags");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.SetTags");
             scope.Start();
             try
             {
@@ -477,7 +477,7 @@ namespace Azure.ResourceManager.EdgeOrder
                 var originalTags = GetTagResource().Get(cancellationToken);
                 originalTags.Value.Data.TagValues.ReplaceWith(tags);
                 GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
-                var originalResponse = _orderItemResourceRestClient.GetOrderItemByName(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken);
+                var originalResponse = _orderItemResourceOrderItemsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken);
                 return Response.FromValue(new OrderItemResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
             }
             catch (Exception e)
@@ -490,7 +490,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Removes a tag by key from the resource.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -499,14 +499,14 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNull(key, nameof(key));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.RemoveTag");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.RemoveTag");
             scope.Start();
             try
             {
                 var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
                 originalTags.Value.Data.TagValues.Remove(key);
                 await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalResponse = await _orderItemResourceRestClient.GetOrderItemByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken).ConfigureAwait(false);
+                var originalResponse = await _orderItemResourceOrderItemsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(new OrderItemResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
             }
             catch (Exception e)
@@ -519,7 +519,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Removes a tag by key from the resource.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/orderItems/{orderItemName}
-        /// Operation Id: GetOrderItemByName
+        /// Operation Id: OrderItems_Get
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -528,14 +528,14 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNull(key, nameof(key));
 
-            using var scope = _orderItemResourceClientDiagnostics.CreateScope("OrderItemResource.RemoveTag");
+            using var scope = _orderItemResourceOrderItemsClientDiagnostics.CreateScope("OrderItemResource.RemoveTag");
             scope.Start();
             try
             {
                 var originalTags = GetTagResource().Get(cancellationToken);
                 originalTags.Value.Data.TagValues.Remove(key);
                 GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
-                var originalResponse = _orderItemResourceRestClient.GetOrderItemByName(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken);
+                var originalResponse = _orderItemResourceOrderItemsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, null, cancellationToken);
                 return Response.FromValue(new OrderItemResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
             }
             catch (Exception e)

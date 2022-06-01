@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    /// <summary> Current availability stage of the product. Availability stage. </summary>
+    /// <summary> Current availability stage of the product. </summary>
     public readonly partial struct AvailabilityStage : IEquatable<AvailabilityStage>
     {
         private readonly string _value;
@@ -23,22 +23,22 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         }
 
         private const string AvailableValue = "Available";
-        private const string ComingSoonValue = "ComingSoon";
         private const string PreviewValue = "Preview";
-        private const string DeprecatedValue = "Deprecated";
         private const string SignupValue = "Signup";
+        private const string ComingSoonValue = "ComingSoon";
+        private const string DeprecatedValue = "Deprecated";
         private const string UnavailableValue = "Unavailable";
 
         /// <summary> Product is available. </summary>
         public static AvailabilityStage Available { get; } = new AvailabilityStage(AvailableValue);
-        /// <summary> Product is coming soon. </summary>
-        public static AvailabilityStage ComingSoon { get; } = new AvailabilityStage(ComingSoonValue);
         /// <summary> Product is in preview. </summary>
         public static AvailabilityStage Preview { get; } = new AvailabilityStage(PreviewValue);
-        /// <summary> Product is deprecated. </summary>
-        public static AvailabilityStage Deprecated { get; } = new AvailabilityStage(DeprecatedValue);
         /// <summary> Product is available only on signup. </summary>
         public static AvailabilityStage Signup { get; } = new AvailabilityStage(SignupValue);
+        /// <summary> Product is coming soon. </summary>
+        public static AvailabilityStage ComingSoon { get; } = new AvailabilityStage(ComingSoonValue);
+        /// <summary> Product is deprecated. </summary>
+        public static AvailabilityStage Deprecated { get; } = new AvailabilityStage(DeprecatedValue);
         /// <summary> Product is not available. </summary>
         public static AvailabilityStage Unavailable { get; } = new AvailabilityStage(UnavailableValue);
         /// <summary> Determines if two <see cref="AvailabilityStage"/> values are the same. </summary>

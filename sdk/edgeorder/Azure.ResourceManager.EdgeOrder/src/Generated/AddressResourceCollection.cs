@@ -27,8 +27,8 @@ namespace Azure.ResourceManager.EdgeOrder
     /// </summary>
     public partial class AddressResourceCollection : ArmCollection, IEnumerable<AddressResource>, IAsyncEnumerable<AddressResource>
     {
-        private readonly ClientDiagnostics _addressResourceClientDiagnostics;
-        private readonly EdgeOrderManagementRestOperations _addressResourceRestClient;
+        private readonly ClientDiagnostics _addressResourceAddressesClientDiagnostics;
+        private readonly AddressesRestOperations _addressResourceAddressesRestClient;
 
         /// <summary> Initializes a new instance of the <see cref="AddressResourceCollection"/> class for mocking. </summary>
         protected AddressResourceCollection()
@@ -40,9 +40,9 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
         internal AddressResourceCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _addressResourceClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.EdgeOrder", AddressResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(AddressResource.ResourceType, out string addressResourceApiVersion);
-            _addressResourceRestClient = new EdgeOrderManagementRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, addressResourceApiVersion);
+            _addressResourceAddressesClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.EdgeOrder", AddressResource.ResourceType.Namespace, Diagnostics);
+            TryGetApiVersion(AddressResource.ResourceType, out string addressResourceAddressesApiVersion);
+            _addressResourceAddressesRestClient = new AddressesRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, addressResourceAddressesApiVersion);
 #if DEBUG
 			ValidateResourceId(Id);
 #endif
@@ -55,9 +55,10 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Creates a new address with the specified parameters. Existing address can be updated with this API
+        /// Create a new address with the specified parameters. Existing address cannot be updated with this API and should
+        /// instead be updated with the Update address API.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses/{addressName}
-        /// Operation Id: CreateAddress
+        /// Operation Id: Addresses_Create
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="addressName"> The name of the address Resource within the specified resource group. address names must be between 3 and 24 characters in length and use any alphanumeric and underscore only. </param>
@@ -70,12 +71,12 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNullOrEmpty(addressName, nameof(addressName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.CreateOrUpdate");
+            using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _addressResourceRestClient.CreateAddressAsync(Id.SubscriptionId, Id.ResourceGroupName, addressName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new EdgeOrderArmOperation<AddressResource>(new AddressResourceOperationSource(Client), _addressResourceClientDiagnostics, Pipeline, _addressResourceRestClient.CreateCreateAddressRequest(Id.SubscriptionId, Id.ResourceGroupName, addressName, data).Request, response, OperationFinalStateVia.Location);
+                var response = await _addressResourceAddressesRestClient.CreateAsync(Id.SubscriptionId, Id.ResourceGroupName, addressName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new EdgeOrderArmOperation<AddressResource>(new AddressResourceOperationSource(Client), _addressResourceAddressesClientDiagnostics, Pipeline, _addressResourceAddressesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, addressName, data).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -88,9 +89,10 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Creates a new address with the specified parameters. Existing address can be updated with this API
+        /// Create a new address with the specified parameters. Existing address cannot be updated with this API and should
+        /// instead be updated with the Update address API.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses/{addressName}
-        /// Operation Id: CreateAddress
+        /// Operation Id: Addresses_Create
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="addressName"> The name of the address Resource within the specified resource group. address names must be between 3 and 24 characters in length and use any alphanumeric and underscore only. </param>
@@ -103,12 +105,12 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNullOrEmpty(addressName, nameof(addressName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.CreateOrUpdate");
+            using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _addressResourceRestClient.CreateAddress(Id.SubscriptionId, Id.ResourceGroupName, addressName, data, cancellationToken);
-                var operation = new EdgeOrderArmOperation<AddressResource>(new AddressResourceOperationSource(Client), _addressResourceClientDiagnostics, Pipeline, _addressResourceRestClient.CreateCreateAddressRequest(Id.SubscriptionId, Id.ResourceGroupName, addressName, data).Request, response, OperationFinalStateVia.Location);
+                var response = _addressResourceAddressesRestClient.Create(Id.SubscriptionId, Id.ResourceGroupName, addressName, data, cancellationToken);
+                var operation = new EdgeOrderArmOperation<AddressResource>(new AddressResourceOperationSource(Client), _addressResourceAddressesClientDiagnostics, Pipeline, _addressResourceAddressesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, addressName, data).Request, response, OperationFinalStateVia.Location);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -121,9 +123,9 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Gets information about the specified address.
+        /// Get information about the specified address.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses/{addressName}
-        /// Operation Id: GetAddressByName
+        /// Operation Id: Addresses_Get
         /// </summary>
         /// <param name="addressName"> The name of the address Resource within the specified resource group. address names must be between 3 and 24 characters in length and use any alphanumeric and underscore only. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -133,11 +135,11 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNullOrEmpty(addressName, nameof(addressName));
 
-            using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.Get");
+            using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.Get");
             scope.Start();
             try
             {
-                var response = await _addressResourceRestClient.GetAddressByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken).ConfigureAwait(false);
+                var response = await _addressResourceAddressesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new AddressResource(Client, response.Value), response.GetRawResponse());
@@ -150,9 +152,9 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Gets information about the specified address.
+        /// Get information about the specified address.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses/{addressName}
-        /// Operation Id: GetAddressByName
+        /// Operation Id: Addresses_Get
         /// </summary>
         /// <param name="addressName"> The name of the address Resource within the specified resource group. address names must be between 3 and 24 characters in length and use any alphanumeric and underscore only. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -162,11 +164,11 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNullOrEmpty(addressName, nameof(addressName));
 
-            using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.Get");
+            using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.Get");
             scope.Start();
             try
             {
-                var response = _addressResourceRestClient.GetAddressByName(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken);
+                var response = _addressResourceAddressesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new AddressResource(Client, response.Value), response.GetRawResponse());
@@ -179,23 +181,24 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Lists all the addresses available under the given resource group.
+        /// List all the addresses available under the given resource group.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses
-        /// Operation Id: ListAddressesAtResourceGroupLevel
+        /// Operation Id: Addresses_ListByResourceGroup
         /// </summary>
         /// <param name="filter"> $filter is supported to filter based on shipping address properties. Filter supports only equals operation. </param>
-        /// <param name="skipToken"> $skipToken is supported on Get list of addresses, which provides the next page in the list of address. </param>
+        /// <param name="top"> $top is supported on fetching list of resources. $top=10 means that the first 10 items in the list will be returned to the API caller. </param>
+        /// <param name="skipToken"> $skipToken is supported on Get list of addresses, which provides the next page in the list of addresses. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> An async collection of <see cref="AddressResource" /> that may take multiple service requests to iterate over. </returns>
-        public virtual AsyncPageable<AddressResource> GetAllAsync(string filter = null, string skipToken = null, CancellationToken cancellationToken = default)
+        public virtual AsyncPageable<AddressResource> GetAllAsync(string filter = null, int? top = null, string skipToken = null, CancellationToken cancellationToken = default)
         {
             async Task<Page<AddressResource>> FirstPageFunc(int? pageSizeHint)
             {
-                using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
+                using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
                 scope.Start();
                 try
                 {
-                    var response = await _addressResourceRestClient.ListAddressesAtResourceGroupLevelAsync(Id.SubscriptionId, Id.ResourceGroupName, filter, skipToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var response = await _addressResourceAddressesRestClient.ListByResourceGroupAsync(Id.SubscriptionId, Id.ResourceGroupName, filter, top, skipToken, cancellationToken: cancellationToken).ConfigureAwait(false);
                     return Page.FromValues(response.Value.Value.Select(value => new AddressResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
                 }
                 catch (Exception e)
@@ -206,11 +209,11 @@ namespace Azure.ResourceManager.EdgeOrder
             }
             async Task<Page<AddressResource>> NextPageFunc(string nextLink, int? pageSizeHint)
             {
-                using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
+                using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
                 scope.Start();
                 try
                 {
-                    var response = await _addressResourceRestClient.ListAddressesAtResourceGroupLevelNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, filter, skipToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var response = await _addressResourceAddressesRestClient.ListByResourceGroupNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, filter, top, skipToken, cancellationToken: cancellationToken).ConfigureAwait(false);
                     return Page.FromValues(response.Value.Value.Select(value => new AddressResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
                 }
                 catch (Exception e)
@@ -223,23 +226,24 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Lists all the addresses available under the given resource group.
+        /// List all the addresses available under the given resource group.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses
-        /// Operation Id: ListAddressesAtResourceGroupLevel
+        /// Operation Id: Addresses_ListByResourceGroup
         /// </summary>
         /// <param name="filter"> $filter is supported to filter based on shipping address properties. Filter supports only equals operation. </param>
-        /// <param name="skipToken"> $skipToken is supported on Get list of addresses, which provides the next page in the list of address. </param>
+        /// <param name="top"> $top is supported on fetching list of resources. $top=10 means that the first 10 items in the list will be returned to the API caller. </param>
+        /// <param name="skipToken"> $skipToken is supported on Get list of addresses, which provides the next page in the list of addresses. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A collection of <see cref="AddressResource" /> that may take multiple service requests to iterate over. </returns>
-        public virtual Pageable<AddressResource> GetAll(string filter = null, string skipToken = null, CancellationToken cancellationToken = default)
+        public virtual Pageable<AddressResource> GetAll(string filter = null, int? top = null, string skipToken = null, CancellationToken cancellationToken = default)
         {
             Page<AddressResource> FirstPageFunc(int? pageSizeHint)
             {
-                using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
+                using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
                 scope.Start();
                 try
                 {
-                    var response = _addressResourceRestClient.ListAddressesAtResourceGroupLevel(Id.SubscriptionId, Id.ResourceGroupName, filter, skipToken, cancellationToken: cancellationToken);
+                    var response = _addressResourceAddressesRestClient.ListByResourceGroup(Id.SubscriptionId, Id.ResourceGroupName, filter, top, skipToken, cancellationToken: cancellationToken);
                     return Page.FromValues(response.Value.Value.Select(value => new AddressResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
                 }
                 catch (Exception e)
@@ -250,11 +254,11 @@ namespace Azure.ResourceManager.EdgeOrder
             }
             Page<AddressResource> NextPageFunc(string nextLink, int? pageSizeHint)
             {
-                using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
+                using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.GetAll");
                 scope.Start();
                 try
                 {
-                    var response = _addressResourceRestClient.ListAddressesAtResourceGroupLevelNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, filter, skipToken, cancellationToken: cancellationToken);
+                    var response = _addressResourceAddressesRestClient.ListByResourceGroupNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, filter, top, skipToken, cancellationToken: cancellationToken);
                     return Page.FromValues(response.Value.Value.Select(value => new AddressResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
                 }
                 catch (Exception e)
@@ -269,7 +273,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Checks to see if the resource exists in azure.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses/{addressName}
-        /// Operation Id: GetAddressByName
+        /// Operation Id: Addresses_Get
         /// </summary>
         /// <param name="addressName"> The name of the address Resource within the specified resource group. address names must be between 3 and 24 characters in length and use any alphanumeric and underscore only. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -279,11 +283,11 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNullOrEmpty(addressName, nameof(addressName));
 
-            using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.Exists");
+            using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _addressResourceRestClient.GetAddressByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _addressResourceAddressesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -296,7 +300,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Checks to see if the resource exists in azure.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/addresses/{addressName}
-        /// Operation Id: GetAddressByName
+        /// Operation Id: Addresses_Get
         /// </summary>
         /// <param name="addressName"> The name of the address Resource within the specified resource group. address names must be between 3 and 24 characters in length and use any alphanumeric and underscore only. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -306,11 +310,11 @@ namespace Azure.ResourceManager.EdgeOrder
         {
             Argument.AssertNotNullOrEmpty(addressName, nameof(addressName));
 
-            using var scope = _addressResourceClientDiagnostics.CreateScope("AddressResourceCollection.Exists");
+            using var scope = _addressResourceAddressesClientDiagnostics.CreateScope("AddressResourceCollection.Exists");
             scope.Start();
             try
             {
-                var response = _addressResourceRestClient.GetAddressByName(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken: cancellationToken);
+                var response = _addressResourceAddressesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, addressName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

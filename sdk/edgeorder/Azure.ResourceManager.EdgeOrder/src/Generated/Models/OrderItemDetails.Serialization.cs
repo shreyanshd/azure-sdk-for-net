@@ -21,6 +21,11 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             writer.WriteObjectValue(ProductDetails);
             writer.WritePropertyName("orderItemType");
             writer.WriteStringValue(OrderItemType.ToString());
+            if (Optional.IsDefined(OrderItemMode))
+            {
+                writer.WritePropertyName("orderItemMode");
+                writer.WriteStringValue(OrderItemMode.Value.ToString());
+            }
             if (Optional.IsDefined(Preferences))
             {
                 writer.WritePropertyName("preferences");
@@ -43,6 +48,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         {
             ProductDetails productDetails = default;
             OrderItemType orderItemType = default;
+            Optional<OrderMode> orderItemMode = default;
             Optional<StageDetails> currentStage = default;
             Optional<IReadOnlyList<StageDetails>> orderItemStageHistory = default;
             Optional<OrderItemPreferences> preferences = default;
@@ -54,7 +60,6 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             Optional<ActionStatusEnum> deletionStatus = default;
             Optional<string> returnReason = default;
             Optional<OrderItemReturnEnum> returnStatus = default;
-            Optional<ResourceProviderDetails> managementRpDetails = default;
             Optional<IReadOnlyList<ResourceProviderDetails>> managementRpDetailsList = default;
             Optional<ResponseError> error = default;
             foreach (var property in element.EnumerateObject())
@@ -67,6 +72,16 @@ namespace Azure.ResourceManager.EdgeOrder.Models
                 if (property.NameEquals("orderItemType"))
                 {
                     orderItemType = new OrderItemType(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("orderItemMode"))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    orderItemMode = new OrderMode(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("currentStage"))
@@ -179,16 +194,6 @@ namespace Azure.ResourceManager.EdgeOrder.Models
                     returnStatus = new OrderItemReturnEnum(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("managementRpDetails"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    managementRpDetails = ResourceProviderDetails.DeserializeResourceProviderDetails(property.Value);
-                    continue;
-                }
                 if (property.NameEquals("managementRpDetailsList"))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
@@ -215,7 +220,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
                     continue;
                 }
             }
-            return new OrderItemDetails(productDetails, orderItemType, currentStage.Value, Optional.ToList(orderItemStageHistory), preferences.Value, forwardShippingDetails.Value, reverseShippingDetails.Value, Optional.ToList(notificationEmailList), cancellationReason.Value, Optional.ToNullable(cancellationStatus), Optional.ToNullable(deletionStatus), returnReason.Value, Optional.ToNullable(returnStatus), managementRpDetails.Value, Optional.ToList(managementRpDetailsList), error.Value);
+            return new OrderItemDetails(productDetails, orderItemType, Optional.ToNullable(orderItemMode), currentStage.Value, Optional.ToList(orderItemStageHistory), preferences.Value, forwardShippingDetails.Value, reverseShippingDetails.Value, Optional.ToList(notificationEmailList), cancellationReason.Value, Optional.ToNullable(cancellationStatus), Optional.ToNullable(deletionStatus), returnReason.Value, Optional.ToNullable(returnStatus), Optional.ToList(managementRpDetailsList), error.Value);
         }
     }
 }

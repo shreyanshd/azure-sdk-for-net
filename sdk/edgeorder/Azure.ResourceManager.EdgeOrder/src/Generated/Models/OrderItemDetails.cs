@@ -36,6 +36,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         /// <summary> Initializes a new instance of OrderItemDetails. </summary>
         /// <param name="productDetails"> Unique identifier for configuration. </param>
         /// <param name="orderItemType"> Order item type. </param>
+        /// <param name="orderItemMode"> Defines the mode of the Order item. </param>
         /// <param name="currentStage"> Current Order item Status. </param>
         /// <param name="orderItemStageHistory"> Order item status history. </param>
         /// <param name="preferences"> Customer notification Preferences. </param>
@@ -47,13 +48,13 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         /// <param name="deletionStatus"> Describes whether the order item is deletable or not. </param>
         /// <param name="returnReason"> Return reason. </param>
         /// <param name="returnStatus"> Describes whether the order item is returnable or not. </param>
-        /// <param name="managementRpDetails"> Parent RP details - this returns only the first or default parent RP from the entire list. </param>
         /// <param name="managementRpDetailsList"> List of parent RP details supported for configuration. </param>
         /// <param name="error"> Top level error for the job. </param>
-        internal OrderItemDetails(ProductDetails productDetails, OrderItemType orderItemType, StageDetails currentStage, IReadOnlyList<StageDetails> orderItemStageHistory, OrderItemPreferences preferences, ForwardShippingDetails forwardShippingDetails, ReverseShippingDetails reverseShippingDetails, IList<string> notificationEmailList, string cancellationReason, OrderItemCancellationEnum? cancellationStatus, ActionStatusEnum? deletionStatus, string returnReason, OrderItemReturnEnum? returnStatus, ResourceProviderDetails managementRpDetails, IReadOnlyList<ResourceProviderDetails> managementRpDetailsList, ResponseError error)
+        internal OrderItemDetails(ProductDetails productDetails, OrderItemType orderItemType, OrderMode? orderItemMode, StageDetails currentStage, IReadOnlyList<StageDetails> orderItemStageHistory, OrderItemPreferences preferences, ForwardShippingDetails forwardShippingDetails, ReverseShippingDetails reverseShippingDetails, IList<string> notificationEmailList, string cancellationReason, OrderItemCancellationEnum? cancellationStatus, ActionStatusEnum? deletionStatus, string returnReason, OrderItemReturnEnum? returnStatus, IReadOnlyList<ResourceProviderDetails> managementRpDetailsList, ResponseError error)
         {
             ProductDetails = productDetails;
             OrderItemType = orderItemType;
+            OrderItemMode = orderItemMode;
             CurrentStage = currentStage;
             OrderItemStageHistory = orderItemStageHistory;
             Preferences = preferences;
@@ -65,7 +66,6 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             DeletionStatus = deletionStatus;
             ReturnReason = returnReason;
             ReturnStatus = returnStatus;
-            ManagementRpDetails = managementRpDetails;
             ManagementRpDetailsList = managementRpDetailsList;
             Error = error;
         }
@@ -74,6 +74,8 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         public ProductDetails ProductDetails { get; set; }
         /// <summary> Order item type. </summary>
         public OrderItemType OrderItemType { get; set; }
+        /// <summary> Defines the mode of the Order item. </summary>
+        public OrderMode? OrderItemMode { get; set; }
         /// <summary> Current Order item Status. </summary>
         public StageDetails CurrentStage { get; }
         /// <summary> Order item status history. </summary>
@@ -96,14 +98,6 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         public string ReturnReason { get; }
         /// <summary> Describes whether the order item is returnable or not. </summary>
         public OrderItemReturnEnum? ReturnStatus { get; }
-        /// <summary> Parent RP details - this returns only the first or default parent RP from the entire list. </summary>
-        internal ResourceProviderDetails ManagementRpDetails { get; }
-        /// <summary> Resource provider namespace. </summary>
-        public string ManagementRpDetailsResourceProviderNamespace
-        {
-            get => ManagementRpDetails?.ResourceProviderNamespace;
-        }
-
         /// <summary> List of parent RP details supported for configuration. </summary>
         public IReadOnlyList<ResourceProviderDetails> ManagementRpDetailsList { get; }
         /// <summary> Top level error for the job. </summary>

@@ -24,6 +24,8 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             Optional<IReadOnlyList<FilterableProperty>> filterableProperties = default;
             Optional<IReadOnlyList<ProductSpecification>> specifications = default;
             Optional<ProductDimensions> dimensions = default;
+            Optional<IReadOnlyList<ChildConfigurationType>> childConfigurationTypes = default;
+            Optional<IReadOnlyList<GroupedChildConfigurations>> groupedChildConfigurations = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("properties"))
@@ -135,11 +137,41 @@ namespace Azure.ResourceManager.EdgeOrder.Models
                             dimensions = ProductDimensions.DeserializeProductDimensions(property0.Value);
                             continue;
                         }
+                        if (property0.NameEquals("childConfigurationTypes"))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                property0.ThrowNonNullablePropertyIsNull();
+                                continue;
+                            }
+                            List<ChildConfigurationType> array = new List<ChildConfigurationType>();
+                            foreach (var item in property0.Value.EnumerateArray())
+                            {
+                                array.Add(new ChildConfigurationType(item.GetString()));
+                            }
+                            childConfigurationTypes = array;
+                            continue;
+                        }
+                        if (property0.NameEquals("groupedChildConfigurations"))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                property0.ThrowNonNullablePropertyIsNull();
+                                continue;
+                            }
+                            List<GroupedChildConfigurations> array = new List<GroupedChildConfigurations>();
+                            foreach (var item in property0.Value.EnumerateArray())
+                            {
+                                array.Add(Models.GroupedChildConfigurations.DeserializeGroupedChildConfigurations(item));
+                            }
+                            groupedChildConfigurations = array;
+                            continue;
+                        }
                     }
                     continue;
                 }
             }
-            return new ProductConfiguration(displayName.Value, description.Value, Optional.ToList(imageInformation), costInformation.Value, availabilityInformation.Value, hierarchyInformation.Value, Optional.ToList(filterableProperties), Optional.ToList(specifications), dimensions.Value);
+            return new ProductConfiguration(displayName.Value, description.Value, Optional.ToList(imageInformation), costInformation.Value, availabilityInformation.Value, hierarchyInformation.Value, Optional.ToList(filterableProperties), Optional.ToList(specifications), dimensions.Value, Optional.ToList(childConfigurationTypes), Optional.ToList(groupedChildConfigurations));
         }
     }
 }

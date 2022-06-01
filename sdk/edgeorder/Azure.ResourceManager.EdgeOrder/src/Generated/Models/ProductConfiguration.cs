@@ -19,6 +19,8 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             ImageInformation = new ChangeTrackingList<ImageInformation>();
             FilterableProperties = new ChangeTrackingList<FilterableProperty>();
             Specifications = new ChangeTrackingList<ProductSpecification>();
+            ChildConfigurationTypes = new ChangeTrackingList<ChildConfigurationType>();
+            GroupedChildConfigurations = new ChangeTrackingList<GroupedChildConfigurations>();
         }
 
         /// <summary> Initializes a new instance of ProductConfiguration. </summary>
@@ -28,10 +30,12 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         /// <param name="costInformation"> Cost information for the product system. </param>
         /// <param name="availabilityInformation"> Availability information of the product system. </param>
         /// <param name="hierarchyInformation"> Hierarchy information of a product. </param>
-        /// <param name="filterableProperties"> list of filters supported for a product. </param>
+        /// <param name="filterableProperties"> List of filters supported for a product. </param>
         /// <param name="specifications"> Specifications of the configuration. </param>
         /// <param name="dimensions"> Dimensions of the configuration. </param>
-        internal ProductConfiguration(string displayName, ProductDescription description, IReadOnlyList<ImageInformation> imageInformation, CostInformation costInformation, AvailabilityInformation availabilityInformation, HierarchyInformation hierarchyInformation, IReadOnlyList<FilterableProperty> filterableProperties, IReadOnlyList<ProductSpecification> specifications, ProductDimensions dimensions)
+        /// <param name="childConfigurationTypes"> Different types of child configurations which exist for this configuration, these can be used to populate the child configuration filter. </param>
+        /// <param name="groupedChildConfigurations"> Child configurations present for the configuration after applying child configuration filter, grouped by the category name of the child configuration. </param>
+        internal ProductConfiguration(string displayName, ProductDescription description, IReadOnlyList<ImageInformation> imageInformation, CostInformation costInformation, AvailabilityInformation availabilityInformation, HierarchyInformation hierarchyInformation, IReadOnlyList<FilterableProperty> filterableProperties, IReadOnlyList<ProductSpecification> specifications, ProductDimensions dimensions, IReadOnlyList<ChildConfigurationType> childConfigurationTypes, IReadOnlyList<GroupedChildConfigurations> groupedChildConfigurations)
         {
             DisplayName = displayName;
             Description = description;
@@ -42,6 +46,8 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             FilterableProperties = filterableProperties;
             Specifications = specifications;
             Dimensions = dimensions;
+            ChildConfigurationTypes = childConfigurationTypes;
+            GroupedChildConfigurations = groupedChildConfigurations;
         }
 
         /// <summary> Display Name for the product system. </summary>
@@ -56,11 +62,15 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         public AvailabilityInformation AvailabilityInformation { get; }
         /// <summary> Hierarchy information of a product. </summary>
         public HierarchyInformation HierarchyInformation { get; }
-        /// <summary> list of filters supported for a product. </summary>
+        /// <summary> List of filters supported for a product. </summary>
         public IReadOnlyList<FilterableProperty> FilterableProperties { get; }
         /// <summary> Specifications of the configuration. </summary>
         public IReadOnlyList<ProductSpecification> Specifications { get; }
         /// <summary> Dimensions of the configuration. </summary>
         public ProductDimensions Dimensions { get; }
+        /// <summary> Different types of child configurations which exist for this configuration, these can be used to populate the child configuration filter. </summary>
+        public IReadOnlyList<ChildConfigurationType> ChildConfigurationTypes { get; }
+        /// <summary> Child configurations present for the configuration after applying child configuration filter, grouped by the category name of the child configuration. </summary>
+        public IReadOnlyList<GroupedChildConfigurations> GroupedChildConfigurations { get; }
     }
 }

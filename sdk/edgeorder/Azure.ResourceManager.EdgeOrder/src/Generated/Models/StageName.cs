@@ -51,9 +51,9 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         public static StageName InUse { get; } = new StageName(InUseValue);
         /// <summary> Return has been initiated by customer. </summary>
         public static StageName ReturnInitiated { get; } = new StageName(ReturnInitiatedValue);
-        /// <summary> Order is in transit from customer to microsoft. </summary>
+        /// <summary> Order is in transit from customer to Microsoft. </summary>
         public static StageName ReturnPickedUp { get; } = new StageName(ReturnPickedUpValue);
-        /// <summary> Order has been received back to microsoft. </summary>
+        /// <summary> Order has been received back to Microsoft. </summary>
         public static StageName ReturnedToMicrosoft { get; } = new StageName(ReturnedToMicrosoftValue);
         /// <summary> Return has now completed. </summary>
         public static StageName ReturnCompleted { get; } = new StageName(ReturnCompletedValue);

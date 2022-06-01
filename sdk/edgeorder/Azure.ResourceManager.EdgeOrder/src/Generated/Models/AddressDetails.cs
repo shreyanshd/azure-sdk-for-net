@@ -13,7 +13,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
     public partial class AddressDetails
     {
         /// <summary> Initializes a new instance of AddressDetails. </summary>
-        /// <param name="forwardAddress"> Customer address and contact details. It should be address resource. </param>
+        /// <param name="forwardAddress"> Customer address and contact details. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="forwardAddress"/> is null. </exception>
         public AddressDetails(AddressProperties forwardAddress)
         {
@@ -26,7 +26,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         }
 
         /// <summary> Initializes a new instance of AddressDetails. </summary>
-        /// <param name="forwardAddress"> Customer address and contact details. It should be address resource. </param>
+        /// <param name="forwardAddress"> Customer address and contact details. </param>
         /// <param name="returnAddress"> Return shipping address. </param>
         internal AddressDetails(AddressProperties forwardAddress, AddressProperties returnAddress)
         {
@@ -34,7 +34,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             ReturnAddress = returnAddress;
         }
 
-        /// <summary> Customer address and contact details. It should be address resource. </summary>
+        /// <summary> Customer address and contact details. </summary>
         public AddressProperties ForwardAddress { get; set; }
         /// <summary> Return shipping address. </summary>
         public AddressProperties ReturnAddress { get; }

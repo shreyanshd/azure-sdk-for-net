@@ -23,6 +23,16 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             }
             writer.WritePropertyName("hierarchyInformation");
             writer.WriteObjectValue(HierarchyInformation);
+            if (Optional.IsCollectionDefined(OptInAdditionalConfigurations))
+            {
+                writer.WritePropertyName("optInAdditionalConfigurations");
+                writer.WriteStartArray();
+                foreach (var item in OptInAdditionalConfigurations)
+                {
+                    writer.WriteObjectValue(item);
+                }
+                writer.WriteEndArray();
+            }
             writer.WriteEndObject();
         }
 
@@ -30,9 +40,11 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         {
             Optional<DisplayInfo> displayInfo = default;
             HierarchyInformation hierarchyInformation = default;
-            Optional<int> count = default;
             Optional<DoubleEncryptionStatus> productDoubleEncryptionStatus = default;
-            Optional<IReadOnlyList<DeviceDetails>> deviceDetails = default;
+            Optional<IdentificationType> identificationType = default;
+            Optional<DeviceDetails> parentDeviceDetails = default;
+            Optional<IList<AdditionalConfiguration>> optInAdditionalConfigurations = default;
+            Optional<IReadOnlyList<ConfigurationDeviceDetails>> childConfigurationDeviceDetails = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("displayInfo"))
@@ -50,16 +62,6 @@ namespace Azure.ResourceManager.EdgeOrder.Models
                     hierarchyInformation = HierarchyInformation.DeserializeHierarchyInformation(property.Value);
                     continue;
                 }
-                if (property.NameEquals("count"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    count = property.Value.GetInt32();
-                    continue;
-                }
                 if (property.NameEquals("productDoubleEncryptionStatus"))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
@@ -70,23 +72,58 @@ namespace Azure.ResourceManager.EdgeOrder.Models
                     productDoubleEncryptionStatus = new DoubleEncryptionStatus(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("deviceDetails"))
+                if (property.NameEquals("identificationType"))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<DeviceDetails> array = new List<DeviceDetails>();
+                    identificationType = new IdentificationType(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("parentDeviceDetails"))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    parentDeviceDetails = DeviceDetails.DeserializeDeviceDetails(property.Value);
+                    continue;
+                }
+                if (property.NameEquals("optInAdditionalConfigurations"))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    List<AdditionalConfiguration> array = new List<AdditionalConfiguration>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(Models.DeviceDetails.DeserializeDeviceDetails(item));
+                        array.Add(AdditionalConfiguration.DeserializeAdditionalConfiguration(item));
                     }
-                    deviceDetails = array;
+                    optInAdditionalConfigurations = array;
+                    continue;
+                }
+                if (property.NameEquals("childConfigurationDeviceDetails"))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    List<ConfigurationDeviceDetails> array = new List<ConfigurationDeviceDetails>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(ConfigurationDeviceDetails.DeserializeConfigurationDeviceDetails(item));
+                    }
+                    childConfigurationDeviceDetails = array;
                     continue;
                 }
             }
-            return new ProductDetails(displayInfo.Value, hierarchyInformation, Optional.ToNullable(count), Optional.ToNullable(productDoubleEncryptionStatus), Optional.ToList(deviceDetails));
+            return new ProductDetails(displayInfo.Value, hierarchyInformation, Optional.ToNullable(productDoubleEncryptionStatus), Optional.ToNullable(identificationType), parentDeviceDetails.Value, Optional.ToList(optInAdditionalConfigurations), Optional.ToList(childConfigurationDeviceDetails));
         }
     }
 }

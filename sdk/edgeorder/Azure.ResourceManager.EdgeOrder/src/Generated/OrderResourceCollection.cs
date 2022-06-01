@@ -24,8 +24,8 @@ namespace Azure.ResourceManager.EdgeOrder
     /// </summary>
     public partial class OrderResourceCollection : ArmCollection
     {
-        private readonly ClientDiagnostics _orderResourceClientDiagnostics;
-        private readonly EdgeOrderManagementRestOperations _orderResourceRestClient;
+        private readonly ClientDiagnostics _orderResourceOrdersClientDiagnostics;
+        private readonly OrdersRestOperations _orderResourceOrdersRestClient;
 
         /// <summary> Initializes a new instance of the <see cref="OrderResourceCollection"/> class for mocking. </summary>
         protected OrderResourceCollection()
@@ -37,9 +37,9 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
         internal OrderResourceCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _orderResourceClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.EdgeOrder", OrderResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(OrderResource.ResourceType, out string orderResourceApiVersion);
-            _orderResourceRestClient = new EdgeOrderManagementRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, orderResourceApiVersion);
+            _orderResourceOrdersClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.EdgeOrder", OrderResource.ResourceType.Namespace, Diagnostics);
+            TryGetApiVersion(OrderResource.ResourceType, out string orderResourceOrdersApiVersion);
+            _orderResourceOrdersRestClient = new OrdersRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, orderResourceOrdersApiVersion);
 #if DEBUG
 			ValidateResourceId(Id);
 #endif
@@ -52,9 +52,9 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Gets an order.
+        /// Get an order.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/locations/{location}/orders/{orderName}
-        /// Operation Id: GetOrderByName
+        /// Operation Id: Orders_Get
         /// </summary>
         /// <param name="location"> The name of Azure region. </param>
         /// <param name="orderName"> The name of the order. </param>
@@ -66,11 +66,11 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNullOrEmpty(location, nameof(location));
             Argument.AssertNotNullOrEmpty(orderName, nameof(orderName));
 
-            using var scope = _orderResourceClientDiagnostics.CreateScope("OrderResourceCollection.Get");
+            using var scope = _orderResourceOrdersClientDiagnostics.CreateScope("OrderResourceCollection.Get");
             scope.Start();
             try
             {
-                var response = await _orderResourceRestClient.GetOrderByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken).ConfigureAwait(false);
+                var response = await _orderResourceOrdersRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new OrderResource(Client, response.Value), response.GetRawResponse());
@@ -83,9 +83,9 @@ namespace Azure.ResourceManager.EdgeOrder
         }
 
         /// <summary>
-        /// Gets an order.
+        /// Get an order.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/locations/{location}/orders/{orderName}
-        /// Operation Id: GetOrderByName
+        /// Operation Id: Orders_Get
         /// </summary>
         /// <param name="location"> The name of Azure region. </param>
         /// <param name="orderName"> The name of the order. </param>
@@ -97,11 +97,11 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNullOrEmpty(location, nameof(location));
             Argument.AssertNotNullOrEmpty(orderName, nameof(orderName));
 
-            using var scope = _orderResourceClientDiagnostics.CreateScope("OrderResourceCollection.Get");
+            using var scope = _orderResourceOrdersClientDiagnostics.CreateScope("OrderResourceCollection.Get");
             scope.Start();
             try
             {
-                var response = _orderResourceRestClient.GetOrderByName(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken);
+                var response = _orderResourceOrdersRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new OrderResource(Client, response.Value), response.GetRawResponse());
@@ -116,7 +116,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Checks to see if the resource exists in azure.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/locations/{location}/orders/{orderName}
-        /// Operation Id: GetOrderByName
+        /// Operation Id: Orders_Get
         /// </summary>
         /// <param name="location"> The name of Azure region. </param>
         /// <param name="orderName"> The name of the order. </param>
@@ -128,11 +128,11 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNullOrEmpty(location, nameof(location));
             Argument.AssertNotNullOrEmpty(orderName, nameof(orderName));
 
-            using var scope = _orderResourceClientDiagnostics.CreateScope("OrderResourceCollection.Exists");
+            using var scope = _orderResourceOrdersClientDiagnostics.CreateScope("OrderResourceCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _orderResourceRestClient.GetOrderByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _orderResourceOrdersRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -145,7 +145,7 @@ namespace Azure.ResourceManager.EdgeOrder
         /// <summary>
         /// Checks to see if the resource exists in azure.
         /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EdgeOrder/locations/{location}/orders/{orderName}
-        /// Operation Id: GetOrderByName
+        /// Operation Id: Orders_Get
         /// </summary>
         /// <param name="location"> The name of Azure region. </param>
         /// <param name="orderName"> The name of the order. </param>
@@ -157,11 +157,11 @@ namespace Azure.ResourceManager.EdgeOrder
             Argument.AssertNotNullOrEmpty(location, nameof(location));
             Argument.AssertNotNullOrEmpty(orderName, nameof(orderName));
 
-            using var scope = _orderResourceClientDiagnostics.CreateScope("OrderResourceCollection.Exists");
+            using var scope = _orderResourceOrdersClientDiagnostics.CreateScope("OrderResourceCollection.Exists");
             scope.Start();
             try
             {
-                var response = _orderResourceRestClient.GetOrderByName(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken: cancellationToken);
+                var response = _orderResourceOrdersRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, location, orderName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)

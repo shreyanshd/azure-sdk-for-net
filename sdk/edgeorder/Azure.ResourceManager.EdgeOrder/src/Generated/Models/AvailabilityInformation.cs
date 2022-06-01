@@ -16,7 +16,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
         }
 
         /// <summary> Initializes a new instance of AvailabilityInformation. </summary>
-        /// <param name="availabilityStage"> Current availability stage of the product. Availability stage. </param>
+        /// <param name="availabilityStage"> Current availability stage of the product. </param>
         /// <param name="disabledReason"> Reason why the product is disabled. </param>
         /// <param name="disabledReasonMessage"> Message for why the product is disabled. </param>
         internal AvailabilityInformation(AvailabilityStage? availabilityStage, DisabledReason? disabledReason, string disabledReasonMessage)
@@ -26,7 +26,7 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             DisabledReasonMessage = disabledReasonMessage;
         }
 
-        /// <summary> Current availability stage of the product. Availability stage. </summary>
+        /// <summary> Current availability stage of the product. </summary>
         public AvailabilityStage? AvailabilityStage { get; }
         /// <summary> Reason why the product is disabled. </summary>
         public DisabledReason? DisabledReason { get; }
